@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:15.5-alpine3.18
+    restart: always
+    env_file:
+      - env/pg.env
+    ports:
+      - '5432:5432'
+  serv:
+    build:
+      context: .
+      dockerfile: cmd/Dockerfile
+    container_name: srv
+    env_file:
+      - env/pg.env
+      - env/srv.env
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    hostname: swagger-ui
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./docs/:/spec/
+    environment:
+      - SWAGGER_JSON=/spec/swagger.json
