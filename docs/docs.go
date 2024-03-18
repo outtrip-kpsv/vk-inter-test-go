@@ -42,7 +42,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Поле для сортировки (например, 'name')",
+                        "description": "Поле для сортировки ",
                         "name": "sort",
                         "in": "query"
                     },
@@ -70,8 +70,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Актер не найден",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -126,6 +132,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
                     "403": {
                         "description": "Доступ запрещен: отсутствие необходимой роли",
                         "schema": {
@@ -134,12 +146,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Актер не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -195,19 +201,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Отказано в доступе: ошибка извлечения токена",
+                        "description": "Отказано в доступе: ошибка токена",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "403": {
                         "description": "Доступ запрещен: отсутствие необходимой роли",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -254,6 +254,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
                     "403": {
                         "description": "Доступ запрещен: отсутствие необходимой роли",
                         "schema": {
@@ -262,12 +268,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Актер не найден",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -428,8 +428,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Фильмы не найден",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -484,8 +490,20 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен: отсутствие необходимой роли",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Фильм не найден",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -540,8 +558,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен: отсутствие необходимой роли",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -588,8 +612,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
+                    "401": {
+                        "description": "Отказано в доступе: ошибка токена",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещен: отсутствие необходимой роли",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }

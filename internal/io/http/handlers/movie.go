@@ -22,7 +22,8 @@ import (
 // @Security bearerAuth
 // @Success 200 {object} models.MovieIo "Успешно созданный фильм"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
+// @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
 // @Router /api/movie [post]
 func (c *Controller) CreateMovie(w http.ResponseWriter, req *http.Request) {
 
@@ -38,6 +39,7 @@ func (c *Controller) CreateMovie(w http.ResponseWriter, req *http.Request) {
 	movieIo, err := c.Bl.CreateMovie(movie)
 	if err != nil {
 		c.logger.Info("err", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
 		answer = models.ErrorResponse{
 			Error: "err : '" + err.Error() + "'",
 		}
@@ -59,18 +61,21 @@ func (c *Controller) CreateMovie(w http.ResponseWriter, req *http.Request) {
 // @Security bearerAuth
 // @Success 200 {object} models.OkResponse "Успешное удаление фильма"
 // @Failure 400 {object} models.ErrorResponse "Неверное значение ID или ошибка удаления"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
+// @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
 // @Router /api/movie [delete]
 func (c *Controller) DeleteMovie(w http.ResponseWriter, req *http.Request) {
 	idStr := req.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
+		w.WriteHeader(http.StatusBadRequest)
 		ioutils.RespErrorText("Не верное значение ID", w)
 		return
 	}
 	rows, err := c.Bl.DeleteMovie(id)
 	if err != nil || rows == 0 {
-		ioutils.RespErrorText("Ошибка удалеия", w)
+		w.WriteHeader(http.StatusBadRequest)
+		ioutils.RespErrorText("Ошибка удаления", w)
 		return
 	}
 	answer := models.OkResponse{Ok: "Запись удалена"}
@@ -91,7 +96,9 @@ func (c *Controller) DeleteMovie(w http.ResponseWriter, req *http.Request) {
 // @Security bearerAuth
 // @Success 200 {object} repo.Movie "Обновленные данные фильма"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
+// @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
+// @Failure 404 {object} models.ErrorResponse "Фильм не найден"
 // @Router /api/movie [put]
 func (c *Controller) UpdateMovie(w http.ResponseWriter, req *http.Request) {
 	var movie repo.Movie
@@ -115,6 +122,7 @@ func (c *Controller) UpdateMovie(w http.ResponseWriter, req *http.Request) {
 	movie, err = c.Bl.UpdateMovie(movie)
 	if err != nil {
 		c.logger.Info("err", zap.Error(err))
+		w.WriteHeader(http.StatusNotFound)
 		answer = models.ErrorResponse{
 			Error: "err : '" + err.Error() + "'",
 		}
@@ -141,7 +149,8 @@ func (c *Controller) UpdateMovie(w http.ResponseWriter, req *http.Request) {
 // @Produce  json
 // @Success 200 {array} models.MovieIo "Список фильмов"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
+// @Failure 404 {object} models.ErrorResponse "Фильмы не найден"
 // @Router /api/movie [get]
 func (c *Controller) GetMovies(w http.ResponseWriter, req *http.Request) {
 	title := req.URL.Query().Get("title")
@@ -159,11 +168,17 @@ func (c *Controller) GetMovies(w http.ResponseWriter, req *http.Request) {
 	}
 	movieIo, err := c.Bl.GetAllMoviesByTitle(title, orderBy)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		ioutils.RespErrorText(err.Error(), w)
 		return
 	}
 	c.logger.Info("resp : ", zap.Reflect("answer :", movieIo))
+	if movieIo == nil {
+		w.WriteHeader(http.StatusNotFound)
+		answer := models.ErrorResponse{Error: "не найдено ни одного фильма по заданным параметрам"}
+		ioutils.RespJson(w, answer)
 
+	}
 	ioutils.RespJson(w, movieIo)
 	return
 

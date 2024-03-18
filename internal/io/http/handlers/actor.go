@@ -21,9 +21,8 @@ import (
 // @Security bearerAuth
 // @Success 200 {object} repo.Actor "Успешно созданный актер"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
-// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка извлечения токена"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
 // @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /api/actor [post]
 func (c *Controller) CreateActor(w http.ResponseWriter, req *http.Request) {
 
@@ -39,6 +38,7 @@ func (c *Controller) CreateActor(w http.ResponseWriter, req *http.Request) {
 	createActor, err := c.Bl.CreateActor(actor)
 	if err != nil {
 		c.logger.Info("err", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
 		answer = models.ErrorResponse{
 			Error: "err : '" + err.Error() + "'",
 		}
@@ -59,9 +59,9 @@ func (c *Controller) CreateActor(w http.ResponseWriter, req *http.Request) {
 // @Security bearerAuth
 // @Success 200 {object} models.OkResponse "Успешное удаление актера"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
 // @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
 // @Failure 404 {object} models.ErrorResponse "Актер не найден"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /api/actor [delete]
 func (c *Controller) DeleteActor(w http.ResponseWriter, req *http.Request) {
 	name := req.URL.Query().Get("name")
@@ -70,6 +70,7 @@ func (c *Controller) DeleteActor(w http.ResponseWriter, req *http.Request) {
 
 	res, err := c.Bl.DeleteActor(name)
 	if res == 0 {
+		w.WriteHeader(http.StatusNotFound)
 		answer = models.ErrorResponse{
 			Error: "актера с таким именем нет в базе",
 		}
@@ -78,6 +79,8 @@ func (c *Controller) DeleteActor(w http.ResponseWriter, req *http.Request) {
 	}
 	if err != nil {
 		c.logger.Info("err", zap.Error(err))
+		w.WriteHeader(http.StatusBadRequest)
+
 		answer = models.ErrorResponse{
 			Error: "err : '" + err.Error() + "'",
 		}
@@ -102,8 +105,8 @@ func (c *Controller) DeleteActor(w http.ResponseWriter, req *http.Request) {
 // @Success 200 {object} repo.Actor "Обновленные данные актера"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
 // @Failure 403 {object} models.ErrorResponse "Доступ запрещен: отсутствие необходимой роли"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
 // @Failure 404 {object} models.ErrorResponse "Актер не найден"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /api/actor [put]
 func (c *Controller) UpdateActor(w http.ResponseWriter, req *http.Request) {
 	var actor repo.Actor
@@ -125,6 +128,7 @@ func (c *Controller) UpdateActor(w http.ResponseWriter, req *http.Request) {
 	actor, err = c.Bl.UpdateActor(actor)
 	if err != nil {
 		c.logger.Info("err", zap.Error(err))
+		w.WriteHeader(http.StatusNotFound)
 		answer = models.ErrorResponse{
 			Error: "err : '" + err.Error() + "'",
 		}
@@ -150,7 +154,8 @@ func (c *Controller) UpdateActor(w http.ResponseWriter, req *http.Request) {
 // @Produce  json
 // @Success 200 {array} models.ActorIo "Список актеров"
 // @Failure 400 {object} models.ErrorResponse "Неверный формат данных"
-// @Failure 500 {object} models.ErrorResponse "Внутренняя ошибка сервера"
+// @Failure 401 {object} models.ErrorResponse "Отказано в доступе: ошибка токена"
+// @Failure 404 {object} models.ErrorResponse "Актер не найден"
 // @Router /api/actor [get]
 func (c *Controller) GetAllActors(w http.ResponseWriter, req *http.Request) {
 	name := req.URL.Query().Get("name")
@@ -158,9 +163,21 @@ func (c *Controller) GetAllActors(w http.ResponseWriter, req *http.Request) {
 
 	actors, err := c.Bl.GetAllActorsLikeName(name, orderBy)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		answer := models.ErrorResponse{
+			Error: "err : '" + err.Error() + "'",
+		}
+		ioutils.RespJson(w, answer)
+
 		return
 	}
 	c.logger.Info("resp : ", zap.Reflect("answer :", actors))
+	if actors == nil {
+		w.WriteHeader(http.StatusNotFound)
 
+		answer := models.ErrorResponse{Error: "не найдено ни одного актера по заданным параметрам"}
+		ioutils.RespJson(w, answer)
+		return
+	}
 	ioutils.RespJson(w, actors)
 }
