@@ -42,7 +42,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Поле для сортировки ",
+                        "description": "Поле для сортировки, Доступные значения: 'name', 'date'",
                         "name": "sort",
                         "in": "query"
                     },
@@ -400,7 +400,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Поле для сортировки (например, 'title')",
+                        "description": "Поле для сортировки, Доступные значения: 'rating', 'title', 'date'",
                         "name": "sort",
                         "in": "query"
                     },
