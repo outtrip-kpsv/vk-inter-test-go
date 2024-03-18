@@ -163,6 +163,12 @@ func (c *Controller) GetMovies(w http.ResponseWriter, req *http.Request) {
 			ioutils.RespErrorText(err.Error(), w)
 			return
 		}
+		if len(movieIo) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			answer := models.ErrorResponse{Error: "не найдено ни одного фильма по заданным параметрам"}
+			ioutils.RespJson(w, answer)
+			return
+		}
 		ioutils.RespJson(w, movieIo)
 		return
 	}
@@ -173,11 +179,11 @@ func (c *Controller) GetMovies(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	c.logger.Info("resp : ", zap.Reflect("answer :", movieIo))
-	if movieIo == nil {
+	if len(movieIo) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		answer := models.ErrorResponse{Error: "не найдено ни одного фильма по заданным параметрам"}
 		ioutils.RespJson(w, answer)
-
+		return
 	}
 	ioutils.RespJson(w, movieIo)
 	return
