@@ -143,7 +143,7 @@ func (c *Controller) UpdateActor(w http.ResponseWriter, req *http.Request) {
 // @Description Получает всех актеров, если имя не указано, или актеров с определенным именем, если имя указано в запросе.
 // @Tags Actors
 // @Param name query string false "Имя актера для фильтрации"
-// @Param sort query string false "Поле для сортировки (например, 'name')"
+// @Param sort query string false "Поле для сортировки " Доступные значения: 'name', 'date'"
 // @Param Authorization header string true "Bearer"
 // @Security bearerAuth
 // @Accept  json

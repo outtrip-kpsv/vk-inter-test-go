@@ -134,7 +134,7 @@ func (c *Controller) UpdateMovie(w http.ResponseWriter, req *http.Request) {
 // @Tags Movies
 // @Param title query string false "Заголовок фильма для фильтрации"
 // @Param name query string false "Имя актера для фильтрации"
-// @Param sort query string false "Поле для сортировки (например, 'title')"
+// @Param sort query string false "Поле для сортировки (например, 'title')" Доступные значения: 'rating', 'title', 'date'
 // @Param Authorization header string true "Bearer"
 // @Security bearerAuth
 // @Accept  json

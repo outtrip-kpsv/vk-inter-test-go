@@ -1,3 +1,5 @@
+run:
+	docker-compose up
 
 doc-gen:
 	swag init -g ./cmd/serv.go
